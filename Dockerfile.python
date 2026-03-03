@@ -1,0 +1,16 @@
+# python image
+FROM python:3.12-slim
+# copy uv image
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/
+# set working directory
+WORKDIR /workdir
+# Add virtual environment to PATH
+ENV PATH='/workdir/.venv/bin:$PATH'
+# copy dependencies
+COPY pyproject.toml  uv.lock  .python-version ./
+# install dependencies
+RUN uv sync --locked --no-dev
+# copy script
+COPY /src/extract.py extract.py
+# set CMD
+CMD ["uv", "run", "python", "src/extract.py"]
