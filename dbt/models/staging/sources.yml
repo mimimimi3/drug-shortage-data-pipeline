@@ -1,0 +1,35 @@
+version: 2
+
+sources:
+  - name: fda_drug_shortage_raw
+    description: 'Raw data from the FDA API drug shortage endpoint'
+    database: 'fda-pipeline'
+    schema: 'raw_dataset'
+    tables: 
+      - name: 'drug_shortage_data'
+
+models:
+  - name: int_drug_shortage
+    columns:
+      - name: 'package_national_drug_code'
+        tests:
+          - not_null
+      - name: 'generic_name'
+        tests:
+          - not_null
+      - name: 'initial_posting_date'
+        tests:
+          - not_null
+      - name: 'update_date'
+        tests:
+          - not_null
+      - name: 'status'
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Current
+                  - To Be Discontinued
+                  - Resolved
+      

@@ -1,5 +1,6 @@
 from airflow.sdk import dag, task
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
+from airflow.providers.standard.operators.bash import BashOperator
 
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -30,7 +31,7 @@ default_args = {
     dag_id = 'fda_drug_shortage_pipeline',
     default_args = default_args,
     description = 'ELT pipeline for FDA drug shortage data',
-    schedule = '@daily',
+    schedule = '0 0 * * 1-5', # every weekday at midnight (UTC)
     start_date = datetime(2026,3,1),
     catchup = False,
     tags = ['de']
@@ -74,7 +75,17 @@ def fda_drug_shortage_pipeline():
             'field': 'extracted_at'
         }
     )
+
+    dbt_run_task = BashOperator(
+        task_id = 'dbt_run',
+        bash_command = 'cd /opt/airflow/dbt && dbt run'
+    )
+
+    dbt_test_task = BashOperator(
+        task_id = 'dbt_test',
+        bash_command = 'cd /opt/airflow/dbt && dbt test'
+    )
     
-    blob_path >> load_to_bq_task
+    blob_path >> load_to_bq_task >> dbt_run_task >> dbt_test_task
 
 fda_drug_shortage_pipeline()

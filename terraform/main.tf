@@ -28,6 +28,12 @@ resource "google_bigquery_dataset" "staging" {
   location   = var.location
 }
 
+resource "google_bigquery_dataset" "intermediate" {
+  dataset_id = "int_dataset"
+  project    = var.project_id
+  location   = var.location
+}
+
 resource "google_bigquery_dataset" "mart" {
   dataset_id = "mart_dataset"
   project    = var.project_id

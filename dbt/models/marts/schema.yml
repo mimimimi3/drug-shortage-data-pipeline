@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: fact_drug_shortage
+    columns:
+      - name: 'availability'
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: 
+                  - Available
+                  - Limited Availability
+                  - Not Available
+                  - Unavailable
+                  - Information pending
+                  - unknown
+                  - other
